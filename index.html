@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diritto e rovescio - I Principi Fondamentali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0f172a; /* Slate 900 for dark immersive feel */
+            color: #f8fafc; /* Slate 50 */
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            touch-action: manipulation; /* Improves touch on mobile */
+        }
+        .btn:hover {
+            transform: scale(1.02);
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 p-4 shadow-md border-b border-slate-700 flex justify-between items-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-amber-400">Diritto e rovescio</h1>
+        <div id="nav-buttons" class="hidden gap-2">
+            <button onclick="navigate('menu')" class="btn bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold text-lg flex items-center gap-2">
+                🏠 Menu
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-container" class="flex-grow p-4 md:p-8 max-w-4xl mx-auto w-full flex flex-col items-center justify-center">
+        <!-- Content will be injected here by JavaScript -->
+    </main>
+
+    <script>
+        // --- CONTENT DATA ---
+
+        // Scopri Cards (Exact text from PDF, with comments removed from Card 1 as requested)
+        const scopriCards = [
+            {
+                id: 1,
+                title: "Card 1: Principi Democratici e Uguaglianza (Artt. 1-3)",
+                content: `
+                    <p class="mb-4"><strong>ARTICOLO 1:</strong> L'Italia è una Repubblica democratica, fondata sul lavoro. La sovranità appartiene al popolo.</p>
+                    <p class="mb-4"><strong>ARTICOLO 2:</strong> La Repubblica riconosce e garantisce i diritti inviolabili dell'uomo e richiede l'adempimento dei doveri inderogabili di solidarietà politica, economica e sociale.</p>
+                    <p class="mb-4"><strong>ARTICOLO 3:</strong> Tutti i cittadini hanno pari dignità sociale e sono eguali davanti alla legge, senza nessuna distinzione; è compito della Repubblica rimuovere gli ostacoli di ordine economico e sociale che impediscono il pieno sviluppo della persona umana e la partecipazione di tutti i lavoratori all'organizzazione politica, economica e sociale del Paese.</p>
+                `
+            },
+            {
+                id: 2,
+                title: "Card 2: Lavoro, Autonomie e Minoranze (Artt. 4-6)",
+                content: `
+                    <p class="mb-4"><strong>ARTICOLO 4:</strong> La Repubblica riconosce a tutti i cittadini il diritto al lavoro e promuove le condizioni che rendano effettivo questo diritto. Ogni cittadino ha il diritto di svolgere una attività o una funzione che concorra al progresso materiale o spirituale della società.</p>
+                    <p class="mb-4"><strong>ARTICOLO 5:</strong> La Repubblica riconosce e promuove le autonomie locali; attua nei servizi che dipendono dallo Stato il più ampio decentramento amministrativo; adegua i principi ed i metodi della sua legislazione alle esigenze dell'autonomia e del decentramento.</p>
+                    <p class="mb-4"><strong>ARTICOLO 6:</strong> La Repubblica tutela con apposite norme le minoranze linguistiche.</p>
+                `
+            },
+            {
+                id: 3,
+                title: "Card 3: Rapporti tra Stato e Religioni (Artt. 7-8)",
+                content: `
+                    <p class="mb-4"><strong>ARTICOLO 7:</strong> Lo Stato e la Chiesa sono indipendenti e sovrani. I loro rapporti sono regolati dai Patti Lateranensi. Le modificazioni di essi, accettate dalle due parti, non richiedono procedimento di revisione costituzionale.</p>
+                    <p class="mb-4"><strong>ARTICOLO 8:</strong> Tutte le confessioni religiose sono egualmente libere davanti alla legge. Le confessioni religiose diverse dalla cattolica hanno diritto di organizzarsi secondo i propri statuti e i loro rapporti con lo Stato sono regolati per legge sulla base di intese con le relative rappresentanze.</p>
+                `
+            },
+            {
+                id: 4,
+                title: "Card 4: Cultura, Ricerca, Ambiente e Diritto Internazionale (Artt. 9-10)",
+                content: `
+                    <p class="mb-4"><strong>ARTICOLO 9:</strong> La Repubblica promuove lo sviluppo della cultura e la ricerca scientifica e tecnica. Tutela il paesaggio e il patrimonio storico e artistico della Nazione.</p>
+                    <p class="mb-4"><strong>ARTICOLO 10:</strong> L'ordinamento giuridico italiano si conforma alle norme del diritto internazionale generalmente riconosciute. La condizione giuridica dello straniero è regolata dalla legge in conformità delle norme e dei trattati internazionali. Lo straniero ha diritto d'asilo nel territorio della Repubblica secondo le condizioni stabilite dalla legge. Non è ammessa l'estradizione dello straniero per reati politici.</p>
+                `
+            },
+            {
+                id: 5,
+                title: "Card 5: La Pace e la Bandiera (Artt. 11-12)",
+                content: `
+                    <p class="mb-4"><strong>ARTICOLO 11:</strong> L'Italia ripudia la guerra come strumento di offesa alla libertà degli altri popoli e come mezzo di risoluzione delle controversie internazionali; consente, in condizione di parità con gli atri Stati alle limitazioni di sovranità necessarie ad un ordinamento che assicuri la pace e la giustizia fra le Nazioni; promuove e favorisce le organizzazioni internazionali rivolte a tale scopo.</p>
+                    <p class="mb-4"><strong>ARTICOLO 12:</strong> La bandiera della Repubblica è il tricolore italiano: verde, bianco e rosso, a tre bande verticale di eguali dimensioni.</p>
+                `
+            }
+        ];
+
+        // --- QUESTION DATABASE (3 PATHS X 20 QUESTIONS = 60 QUESTIONS) ---
+
+        const questionDatabase = {
+            // PERCORSO GIALLO (FACILE - 20 Domande uniche di comprensione e testo)
+            giallo: [
+                {
+                    id: 1,
+                    text: "Quale articolo della Costituzione definisce i colori ufficiali della bandiera della Repubblica?",
+                    options: ["Articolo 12", "Articolo 1", "Articolo 5"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 12 definisce il tricolore verde, bianco e rosso a tre bande verticali come bandiera della Repubblica.",
+                    cardRef: 5
+                },
+                {
+                    id: 2,
+                    text: "A chi appartiene la sovranità secondo l'Articolo 1 della Costituzione italiana?",
+                    options: ["Al popolo", "Al Governo e al Parlamento", "Al Presidente della Repubblica"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 1 stabilisce chiaramente che la sovranità appartiene al popolo, che la esercita nelle forme e nei limiti della Costituzione.",
+                    cardRef: 1
+                },
+                {
+                    id: 3,
+                    text: "Quale articolo sancisce che tutti i cittadini hanno pari dignità sociale e sono eguali davanti alla legge?",
+                    options: ["Articolo 3", "Articolo 8", "Articolo 10"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 3 sancisce il principio fondamentale di uguaglianza formale e sostanziale.",
+                    cardRef: 1
+                },
+                {
+                    id: 4,
+                    text: "Quale articolo stabilisce che la Repubblica tutela con apposite norme le minoranze linguistiche?",
+                    options: ["Articolo 6", "Articolo 2", "Articolo 9"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 6 stabilisce che la Repubblica tutela con apposite norme le minoranze linguistiche.",
+                    cardRef: 2
+                },
+                {
+                    id: 5,
+                    text: "Cosa dichiara l'Articolo 11 riguardo all'uso della guerra da parte dell'Italia?",
+                    options: ["L'Italia ripudia la guerra come strumento di offesa", "L'Italia consente la guerra solo per motivi economici", "La guerra è ammessa con semplice voto del Comune"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 11 stabilisce espressamente il ripudio della guerra come strumento di offesa alla libertà degli altri popoli.",
+                    cardRef: 5
+                },
+                {
+                    id: 6,
+                    text: "Su cosa si fonda la Repubblica italiana in base al primo comma dell'Articolo 1?",
+                    options: ["Sul lavoro", "Sulla ricchezza dei cittadini", "Sulla storia antica"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 1 apre la Costituzione definendo l'Italia come Repubblica democratica fondata sul lavoro.",
+                    cardRef: 1
+                },
+                {
+                    id: 7,
+                    text: "Come sono considerate tutte le confessioni religiose davanti alla legge secondo l'Articolo 8?",
+                    options: ["Egualmente libere davanti alla legge", "Sottomesse alla religione maggioritaria", "Tollerate solo se non svolgono funzioni pubbliche"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 8 stabilisce che tutte le confessioni religiose sono egualmente libere davanti alla legge.",
+                    cardRef: 3
+                },
+                {
+                    id: 8,
+                    text: "Quale articolo affida alla Repubblica la tutela del paesaggio e del patrimonio storico e artistico?",
+                    options: ["Articolo 9", "Articolo 4", "Articolo 12"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 9 tutela espressamente il paesaggio e il patrimonio storico e artistico della Nazione.",
+                    cardRef: 4
+                },
+                {
+                    id: 9,
+                    text: "Chi ha diritto d'asilo nel territorio della Repubblica secondo l'Articolo 10?",
+                    options: ["Lo straniero al quale sia impedito nel suo paese l'effettivo esercizio delle libertà democratiche", "Tutti i turisti stranieri che visitano l'Italia", "Solo chi possiede una proprietà immobiliare in Italia"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 10 garantisce il diritto d'asilo allo straniero al quale sia impedito l'esercizio delle libertà democratiche garantite dalla Costituzione.",
+                    cardRef: 4
+                },
+                {
+                    id: 10,
+                    text: "Da quali accordi sono regolati i rapporti tra lo Stato italiano e la Chiesa Cattolica (Articolo 7)?",
+                    options: ["Dai Patti Lateranensi", "Dai Trattati dell'Unione Europea", "Dal Codice Civile"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 7 precisa che i rapporti tra Stato e Chiesa Cattolica sono regolati dai Patti Lateranensi.",
+                    cardRef: 3
+                },
+                {
+                    id: 11,
+                    text: "Cosa richiede l'Articolo 2 oltre al riconoscimento dei diritti inviolabili dell'uomo?",
+                    options: ["L'adempimento dei doveri inderogabili di solidarietà", "L'obbligo di iscrizione a un partito politico", "Il pagamento di una tassa annuale per la cittadinanza"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 2 richiede l'adempimento dei doveri inderogabili di solidarietà politica, economica e sociale.",
+                    cardRef: 1
+                },
+                {
+                    id: 12,
+                    text: "Secondo l'Articolo 4, oltre ad essere un diritto, cos'altro costituisce il lavoro per il cittadino?",
+                    options: ["Un dovere di concorrere al progresso della società", "Un obbligo sanzionabile con il carcere", "Una scelta di rilevanza puramente privata"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 4 riconosce il lavoro come diritto e indica il dovere di svolgere un'attività utile alla società.",
+                    cardRef: 2
+                },
+                {
+                    id: 13,
+                    text: "Quale articolo riconosce e promuove le autonomie locali e l'ampio decentramento amministrativo?",
+                    options: ["Articolo 5", "Articolo 1", "Articolo 10"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 5 riconosce e promuove le autonomie locali e adegua i principi della legislazione alle esigenze del decentramento.",
+                    cardRef: 2
+                },
+                {
+                    id: 14,
+                    text: "Quale articolo promuove espressamente lo sviluppo della cultura e la ricerca scientifica e tecnica?",
+                    options: ["Articolo 9", "Articolo 3", "Articolo 11"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 9 stabilisce che la Repubblica promuove lo sviluppo della cultura e la ricerca scientifica e tecnica.",
+                    cardRef: 4
+                },
+                {
+                    id: 15,
+                    text: "L'Articolo 11 consente limitazioni di sovranità se necessarie a quale scopo?",
+                    options: ["Ad assicurare la pace e la giustizia fra le Nazioni", " Ad aumentare il gettito fiscale dello Stato", "A consentire l'espansione dei confini territoriali"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 11 consente limitazioni di sovranità necessarie ad un ordinamento che assicuri la pace e la giustizia fra le Nazioni.",
+                    cardRef: 5
+                },
+                {
+                    id: 16,
+                    text: "Cosa vieta espressamente l'ultimo comma dell'Articolo 10 per lo straniero perseguito per reati politici?",
+                    options: ["L'estradizione", "L'ingresso nei musei pubblici", "Il soggiorno temporaneo per cure mediche"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 10 stabilisce espressamente che non è ammessa l'estradizione dello straniero per reati politici.",
+                    cardRef: 4
+                },
+                {
+                    id: 17,
+                    text: "In che modo l'Articolo 7 definisce la posizione dello Stato e della Chiesa Cattolica?",
+                    options: ["Indipendenti e sovrani, ciascuno nel proprio ordine", "Sottomessi entrambi alle decisioni dei Sindaci", "Riuniti in un unico organo politico-religioso"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 7 stabilisce che lo Stato e la Chiesa Cattolica sono, ciascuno nel proprio ordine, indipendenti e sovrani.",
+                    cardRef: 3
+                },
+                {
+                    id: 18,
+                    text: "A quale diritto internazionale si conforma l'ordinamento giuridico italiano (Articolo 10)?",
+                    options: ["Alle norme del diritto internazionale generalmente riconosciute", "Esclusivamente alle leggi interne degli Stati confinanti", "A nessun trattato firmato fuori dall'Europa"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 10 dichiara che l'ordinamento giuridico italiano si conforma alle norme del diritto internazionale generalmente riconosciute.",
+                    cardRef: 4
+                },
+                {
+                    id: 19,
+                    text: "Qual è il compito assegnato alla Repubblica dal secondo comma dell'Articolo 3?",
+                    options: ["Rimuovere gli ostacoli di ordine economico e sociale", "Garantire stipendi identici per qualsiasi mestiere", "Abolire la proprietà di beni immobili"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 3 comma 2 impone alla Repubblica di rimuovere gli ostacoli economici e sociali che limitano di fatto la libertà e l'eguaglianza.",
+                    cardRef: 1
+                },
+                {
+                    id: 20,
+                    text: "Quante bande e di quali dimensioni è composta la bandiera italiana secondo l'Articolo 12?",
+                    options: ["Tre bande verticali di eguali dimensioni", "Due bande orizzontali di diversa grandezza", "Quattro bande trasversali ed asimmetriche"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 12 specifica la struttura del tricolore: verde, bianco e rosso, a tre bande verticali di eguali dimensioni.",
+                    cardRef: 5
+                }
+            ],
+
+            // PERCORSO ARANCIONE (INTERMEDIO - 20 Domande uniche di casi pratici di vita reale)
+            arancione: [
+                {
+                    id: 1,
+                    text: "Il Sindaco di una città decide di cambiare i colori della bandiera esposta in Comune, adottando il giallo e il blu al posto del verde, bianco e rosso. Quale articolo viene violato?",
+                    options: ["Articolo 12", "Articolo 1", "Articolo 6"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 12 stabilisce chiaramente che la bandiera della Repubblica è il tricolore italiano: verde, bianco e rosso.",
+                    cardRef: 5
+                },
+                {
+                    id: 2,
+                    text: "Un gruppo di cittadini sostiene che solo i più ricchi dovrebbero avere il diritto di votare per il Parlamento. Quale principio fondamentale impedisce questa discriminazione?",
+                    options: ["L'Articolo 1, che affida la sovranità al popolo nella sua interezza", "L'Articolo 9, che tutela la cultura e la ricerca", "L'Articolo 5 sulle autonomie locali"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 1 afferma che l'Italia è una Repubblica democratica e la sovranità appartiene al popolo nella sua interezza.",
+                    cardRef: 1
+                },
+                {
+                    id: 3,
+                    text: "Lo Stato decide di non fornire borse di studio, impedendo ai ragazzi meritevoli ma privi di mezzi economici di frequentare l'università. Quale dovere della Repubblica non viene rispettato?",
+                    options: ["Il compito di rimuovere gli ostacoli economici e sociali (Art. 3)", "Il dovere di ripudiare la guerra (Art. 11)", "Il dovere di tutelare il paesaggio (Art. 9)"],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 3 stabilisce che è compito della Repubblica rimuovere gli ostacoli economici e sociali che impediscono il pieno sviluppo della persona.",
+                    cardRef: 1
+                },
+                {
+                    id: 4,
+                    text: "In una scuola della Valle d'Aosta viene vietato del tutto l'insegnamento e l'uso della lingua francese, parlata storicamente in quella zona. Quale articolo è violato?",
+                    options: ["L'Articolo 6 sulla tutela delle minoranze linguistiche", "L'Articolo 7 sui Patti Lateranensi", "L'Articolo 10 sul diritto d'asilo"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 6 prevede che la Repubblica tuteli con apposite norme le minoranze linguistiche.",
+                    cardRef: 2
+                },
+                {
+                    id: 5,
+                    text: "Uno straniero è perseguitato nel suo Paese d'origine per le sue opinioni politiche e fugge in Italia. Il suo Paese chiede che venga restituito per processarlo. L'Italia può consegnarlo?",
+                    options: ["No, non è ammessa l'estradizione dello straniero per reati politici e ha diritto d'asilo (Art. 10)", "Sì, l'Italia deve sempre estradare gli stranieri che lo richiedono", "Solo se lo straniero paga una sanzione amministrativa (Art. 8)"],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 10 vieta l'estradizione per reati politici e garantisce il diritto d'asilo secondo le condizioni di legge.",
+                    cardRef: 4
+                },
+                {
+                    id: 6,
+                    text: "Lo Stato decide di finanziare un importante centro di ricerca scientifica per scoprire nuove cure mediche. Questa azione è supportata dalla Costituzione?",
+                    options: ["Sì, dall'Articolo 9 che promuove lo sviluppo della ricerca scientifica", "No, lo Stato per Costituzione deve occuparsi solo di difesa militare", "Sì, ma solo dall'Articolo 12 sulla bandiera"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 9 afferma esplicitamente che la Repubblica promuove lo sviluppo della cultura e la ricerca scientifica e tecnica.",
+                    cardRef: 4
+                },
+                {
+                    id: 7,
+                    text: "Un'azienda si rifiuta di assumere lavoratori a causa della loro appartenenza etnica o religiosa. Quale articolo generale sull'eguaglianza viene direttamente violato?",
+                    options: ["L'Articolo 3 (Uguaglianza senza distinzione di razza o religione)", "L'Articolo 11 (Ripudio della guerra)", "L'Articolo 7 (Rapporti Stato-Chiesa)"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 3 sancisce l'uguaglianza di tutti i cittadini davanti alla legge senza distinzioni di razza, religione o condizioni sociali.",
+                    cardRef: 1
+                },
+                {
+                    id: 8,
+                    text: "Il Governo propone di inviare l'esercito ad attaccare un Paese vicino per conquistare giacimenti petroliferi. È ammissibile secondo la Costituzione?",
+                    options: ["No, l'Articolo 11 ripudia la guerra come strumento di offesa alla libertà degli altri popoli", "Sì, purché l'attacco sia votato a maggioranza dal Consiglio dei Ministri", "Sì, in base all'Articolo 10 sul diritto internazionale generale"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 11 stabilisce il fermo ripudio della guerra come strumento di offesa alla libertà di altri popoli.",
+                    cardRef: 5
+                },
+                {
+                    id: 9,
+                    text: "Un Comune vorrebbe riorganizzare i propri servizi locali in base alle esigenze dei residenti, ma una legge elimina ogni autonomia amministrativa comunale. Quale articolo viene contrastato?",
+                    options: ["L'Articolo 5, che riconosce e promuove le autonomie locali e il decentramento", "L'Articolo 2 sui diritti inviolabili", "L'Articolo 9 sulla cultura"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 5 tutela le autonomie locali e l'ampio decentramento amministrativo nei servizi statali.",
+                    cardRef: 2
+                },
+                {
+                    id: 10,
+                    text: "Il Parlamento e la Santa Sede concordano insieme una modifica ai Patti Lateranensi. È necessario avviare una legge di revisione costituzionale?",
+                    options: ["No, l'Articolo 7 precisa che le modifiche accettate da entrambe le parti non richiedono revisione costituzionale", "Sì, serve sempre una revisione della Costituzione votata due volte", "Sì, occorre sottoporre la modifica a un referendum popolare d'obbligo"],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 7 specifica che le modificazioni dei Patti accettate da entrambe le parti non richiedono procedimento di revisione costituzionale.",
+                    cardRef: 3
+                },
+                {
+                    id: 11,
+                    text: "Viene approvata una norma locale che impedisce ai cittadini di fede protestante o musulmana di aprire propri luoghi di culto. Quale principio si sta violando?",
+                    options: ["L'Articolo 8, per cui tutte le confessioni religiose sono egualmente libere davanti alla legge", "L'Articolo 4 sul diritto al lavoro", "L'Articolo 6 sulle minoranze linguistiche"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 8 garantisce che tutte le confessioni religiose siano egualmente libere davanti alla legge.",
+                    cardRef: 3
+                },
+                {
+                    id: 12,
+                    text: "Un cittadino in difficoltà economica richiede sostegni per l'inserimento lavorativo. La Costituzione prevede un impegno pubblico a riguardo?",
+                    options: ["Sì, l'Articolo 4 stabilisce che la Repubblica promuove le condizioni che rendano effettivo il diritto al lavoro", "No, l'occupazione è una questione privatistica priva di rilievo costituzionale", "Solo se il cittadino appartiene ad una minoranza linguistica ex Art. 6"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 4 impone alla Repubblica di promuovere le condizioni economiche e sociali per rendere effettivo il diritto al lavoro.",
+                    cardRef: 2
+                },
+                {
+                    id: 13,
+                    text: "Un residente rifiuta di pagare le imposte dovute per la sanità e i servizi comuni, affermando di non avere doveri verso la collettività. Quale articolo smentisce questa idea?",
+                    options: ["L'Articolo 2, che richiede l'adempimento dei doveri inderogabili di solidarietà politica, economica e sociale", "L'Articolo 12 sul tricolore", "L'Articolo 7 sui Patti Lateranensi"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 2 affianca ai diritti inviolabili anche l'adempimento dei doveri inderogabili di solidarietà.",
+                    cardRef: 1
+                },
+                {
+                    id: 14,
+                    text: "L'Italia ratifica la sua partecipazione ad un organismo internazionale di pace accettando di limitare parzialmente la propria sovranità statale. È un atto valido?",
+                    options: ["Sì, l'Articolo 11 consente limitazioni di sovranità in condizioni di parità per assicurare la pace fra le Nazioni", "No, qualsiasi cessione di sovranità è vietata in modo assoluto", "Sì, ma solo a patto che l'organismo abbia sede all'interno del territorio nazionale"],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 11 consente espressamente limitazioni di sovranità se necessarie a garantire un ordinamento di pace e giustizia tra le Nazioni.",
+                    cardRef: 5
+                },
+                {
+                    id: 15,
+                    text: "Un privato intende abbattere una torre medievale di rilevanza storica per realizzare un parcheggio. Può lo Stato intervenire per bloccare i lavori?",
+                    options: ["Sì, in base all'Articolo 9 che impone la tutela del patrimonio storico e artistico della Nazione", "No, l'iniziativa privata ha sempre la precedenza su immobili antichi", "Solo se la struttura si trova in una regione a statuto speciale ex Art. 5"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 9 assegna alla Repubblica il compito di tutelare il paesaggio e il patrimonio storico e artistico della Nazione.",
+                    cardRef: 4
+                },
+                {
+                    id: 16,
+                    text: "Un'ordinanza vieta la libertà di associazione e di parola per i membri di un sindacato. Quale garanzia costituzionale generale viene lesa?",
+                    options: ["L'Articolo 2, che riconosce e garantisce i diritti inviolabili dell'uomo", "L'Articolo 5 sul decentramento amministrativo", "L'Articolo 11 sui trattati internazionali di pace"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 2 riconosce e garantisce i diritti inviolabili dell'uomo sia come singolo sia nelle formazioni sociali.",
+                    cardRef: 1
+                },
+                {
+                    id: 17,
+                    text: "Se un trattato sui diritti umani ratificato a livello internazionale stabilisce standard di tutela degli stranieri, come si comporta la legislazione italiana?",
+                    options: ["Si conforma alle norme internazionali generalmente riconosciute (Articolo 10)", "Prevale sempre sulle norme esterne ignorando i trattati", "Richiede la riscrittura completa della Costituzione ex Art. 1"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 10 garantisce il costante conformarsi dell'ordinamento italiano alle norme internazionali riconosciute.",
+                    cardRef: 4
+                },
+                {
+                    id: 18,
+                    text: "Una comunità religiosa di recente formazione richiede di stipulare un'intesa con lo Stato per regolare i propri rapporti istituzionali. Quale articolo ne costituisce la base legale?",
+                    options: ["L'Articolo 8, che prevede che i rapporti con lo Stato siano regolati per legge sulla base di intese", "L'Articolo 7 sui Patti Lateranensi con la Chiesa Cattolica", "L'Articolo 12 sulla bandiera tricolore"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 8 determina che i rapporti tra le confessioni non cattoliche e lo Stato siano regolati per legge sulla base di intese.",
+                    cardRef: 3
+                },
+                {
+                    id: 19,
+                    text: "Un cittadino facoltoso decide di non svolgere alcuna attività lavorativa né sociale, disinteressandosi del bene della comunità. Quale valore espresso dall'Articolo 4 viene trascurato?",
+                    options: ["Il dovere di svolgere un'attività che concorra al progresso materiale o spirituale della società", "Il diritto alla parità dei sessi nella retribuzione", "L'obbligo di risiedere nel Comune di nascita"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 4 stabilisce che ogni cittadino ha il dovere di svolgere un'attività che concorra al progresso materiale o spirituale della società.",
+                    cardRef: 2
+                },
+                {
+                    id: 20,
+                    text: "Una legge regionale dispone che l'accesso ai concorsi pubblici sia riservato unicamente ai residenti nati in quella specifica regione. Quale articolo costituzionale la rende incostituzionale?",
+                    options: ["L'Articolo 3, che garantisce l'uguaglianza dei cittadini senza distinzioni personali e sociali", "L'Articolo 9 sulla promozione della cultura", "L'Articolo 7 sull'indipendenza della Chiesa"],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 3 vieta discriminazioni basate su condizioni personali e sociali, sancendo la pari dignità di tutti i cittadini di fronte alla legge.",
+                    cardRef: 1
+                }
+            ],
+
+            // PERCORSO ROSSO (DIFFICILE - 20 Domande uniche su dottrina, interpretazione e bilanciamento costituzionale)
+            rosso: [
+                {
+                    id: 1,
+                    text: "Nell'analisi dogmatica dell'Articolo 1, quale significato assume la dizione 'fondata sul lavoro' rispetto all'assetto sociale dello Stato?",
+                    options: [
+                        "Pone il lavoro e il merito personale come titolo di pari dignità sociale, superando i privilegi di censo e nascita",
+                        "Subordina l'esercizio del voto alla presentazione annuale di un contratto di lavoro a tempo indeterminato",
+                        "Impone la pubblicizzazione di tutte le imprese private presenti sul territorio nazionale"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 1 individua nel lavoro il fondamento della dignità sociale e il fattore di partecipazione attiva alla vita democratica.",
+                    cardRef: 1
+                },
+                {
+                    id: 2,
+                    text: "Come si qualifica sotto il profilo teorico-giuridico la natura dei 'diritti inviolabili' di cui all'Articolo 2?",
+                    options: [
+                        "Riconosciuti come preesistenti allo Stato, il quale non li concede ma si limita a tutelarli",
+                        "Concessi dal Parlamento con legge ordinaria e revocabili a discrezione dell'esecutivo",
+                        "Derivanti unicamente dai decreti del Presidente della Repubblica in tempo di crisi"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "Il verbo 'riconosce' nell'Art. 2 sottintende la natura preesistente e indisponibile dei diritti fondamentali della persona.",
+                    cardRef: 1
+                },
+                {
+                    id: 3,
+                    text: "Qual è la fondamentale distinzione teorica tra il primo e il secondo comma dell'Articolo 3 della Costituzione?",
+                    options: [
+                        "Il 1° comma sancisce l'uguaglianza formale di fronte alla legge; il 2° impone l'uguaglianza sostanziale con la rimozione attiva delle disuguaglianze di fatto",
+                        "Il 1° comma riguarda la tutela degli stranieri; il 2° comma si applica esclusivamente ai cittadini italiani di nascita",
+                        "Il 1° comma regola le materie di diritto penale; il 2° comma disciplina il diritto commerciale e societario"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 3 c.1 sancisce l'uguaglianza formale; il c.2 impegna dinamicamente lo Stato a rimuovere le barriere economico-sociali.",
+                    cardRef: 1
+                },
+                {
+                    id: 4,
+                    text: "Nel sistema dell'Articolo 4, come si struttura il rapporto intercorrente tra la pretesa del singolo e l'impegno statale riguardo al lavoro?",
+                    options: [
+                        "Come diritto di libertà ed opzione di sviluppo da un lato, e come dovere di promozione attiva delle opportunità da parte dello Stato dall'altro",
+                        "Come garanzia automatica di un posto fisso statale assegnato al compimento della maggiore età",
+                        "Come semplice facoltà priva di risvolti o tutele in sede civile o giuslavoristica"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 4 configura il lavoro sia come diritto da rendere effettivo tramite politiche pubbliche, sia come dovere di solidarietà sociale.",
+                    cardRef: 2
+                },
+                {
+                    id: 5,
+                    text: "Nel bilanciamento dell'Articolo 5, quale limite insuperabile viene posto all'espansione delle autonomie locali?",
+                    options: [
+                        "Il principio dell'unità e indivisibilità della Repubblica",
+                        "La necessità di ottenere l'approvazione preventiva da parte di tutti i Comuni confinanti",
+                        "L'obbligo di uniformare le aliquote fiscali locali al tasso fisso europeo"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 5 afferma che la Repubblica è 'una e indivisibile', pur promuovendo le autonomie e il decentramento.",
+                    cardRef: 2
+                },
+                {
+                    id: 6,
+                    text: "Quale funzione giuridica specifica assolve la tutela delle minoranze linguistiche ex Art. 6 rispetto al generale principio di uguaglianza?",
+                    options: [
+                        "Costituisce una misura d'azione positiva volta a proteggere le specificità culturali dall'assimilazione",
+                        "Deroga all'obbligo di applicare le leggi penali nei territori di confine",
+                        "Attribuisce un voto doppio alle popolazioni residenti nelle zone montane"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 6 integra l'uguaglianza dell'Art. 3 garantendo strumenti legislativi ad hoc per salvaguardare la lingua e cultura delle minoranze.",
+                    cardRef: 2
+                },
+                {
+                    id: 7,
+                    text: "Qualora lo Stato italiano intenda modificare unilateralmente i Patti Lateranensi senza l'accordo della Chiesa Cattolica, cosa dispone l'Art. 7?",
+                    options: [
+                        "È necessario adoperare il procedimento di revisione costituzionale",
+                        "È sufficiente un normale decreto-legge deliberato dal Governo",
+                        "La modifica è del tutto impossibile e preclusa in perpetuo"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 7 precisa che se non vi è accordo tra le parti, qualsiasi modifica richiede l'iter di revisione costituzionale.",
+                    cardRef: 3
+                },
+                {
+                    id: 8,
+                    text: "Sulla base dell'Articolo 8, qual è la condizione di validità degli statuti delle confessioni religiose diverse dalla cattolica?",
+                    options: [
+                        "Non devono essere in contrasto con l'ordinamento giuridico italiano",
+                        "Devono ricevere preventiva approvazione dal Pontefice",
+                        "Devono essere redatti obbligatoriamente nella lingua latina"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 8 stabilisce che le confessioni acattoliche hanno diritto di organizzarsi secondo i propri statuti, purché non contrastino con l'ordinamento giuridico italiano.",
+                    cardRef: 3
+                },
+                {
+                    id: 9,
+                    text: "Come viene interpretata in dottrina l'inclusione della tutela del 'paesaggio' nell'Articolo 9 della Costituzione?",
+                    options: [
+                        "Come salvaguardia globale dell'ambiente, dell'ecosistema e dell'identità visiva della Nazione",
+                        "Come limitazione urbanistica applicabile esclusivamente alle zone agricole coltivabili",
+                        "Come semplice delega di competenza alla gestione delle parchi giochi comunali"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 9 fonda la tutela del paesaggio e del patrimonio culturale come valore primario ed estetico-ambientale della Nazione.",
+                    cardRef: 4
+                },
+                {
+                    id: 10,
+                    text: "In che modo opera l'Articolo 10 comma 1 in merito all'adeguamento dell'ordinamento interno alle consuetudini internazionali?",
+                    options: [
+                        "Funziona come un formatore di adattamento automatico per le norme di diritto internazionale generalmente riconosciute",
+                        "Richiede che ciascun trattato sia votato tramite un referendum confermativo a maggioranza assoluta",
+                        "Esclude qualsiasi rilevanza del diritto internazionale sul territorio dello Stato"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 10 c.1 recepisce automaticamente nel diritto interno le norme internazionali consuetudinarie e generalmente riconosciute.",
+                    cardRef: 4
+                },
+                {
+                    id: 11,
+                    text: "Sotto quale rigida condizione reciproca l'Articolo 11 autorizza le limitazioni della sovranità statale?",
+                    options: [
+                        "In condizioni di parità con gli altri Stati",
+                        "Previa garanzia di ritorni finanziari sul PIL nazionale",
+                        "Esclusivamente durante la vigenza di trattati commerciali bilaterali"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 11 ammette limitazioni di sovranità 'in condizione di parità con gli altri Stati', se finalizzate alla pace e giustizia tra le Nazioni.",
+                    cardRef: 5
+                },
+                {
+                    id: 12,
+                    text: "Perché la descrizione della bandiera italiana inserita nell'Articolo 12 appartiene ai Principi Fondamentali non revisionabili nel loro core simbolico?",
+                    options: [
+                        "Perché rappresenta l'elemento identitario ed emblematico intangibile della forma repubblicana",
+                        "Perché i colori della stoffa sono protetti da un brevetto commerciale dello Stato",
+                        "Perché la forma esatta è stabilita in un allegato del Trattato di Parigi"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 12 formalizza l'emblema identitario della Repubblica (il Tricolore), integrando l'inviolabilità dei Principi Fondamentali.",
+                    cardRef: 5
+                },
+                {
+                    id: 13,
+                    text: "Dalla lettura congiunta degli Articoli 7 e 8, quale principio supremo dell'ordinamento costituzionale si ricava?",
+                    options: [
+                        "Il principio supremo di laicità dello Stato e la garanzia della pluralismo confessionale",
+                        "L'obbligo di insegnamento religioso dogmatico in tutte le scuole di ogni ordine e grado",
+                        "La subordinazione delle leggi civili al parere vincolante delle autorità religiose"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "Dagli Artt. 7 e 8 la giurisprudenza costituzionale trae il principio supremo di laicità, improntato alla neutralità e al pluralismo.",
+                    cardRef: 3
+                },
+                {
+                    id: 14,
+                    text: "Se una legge ordinaria stabilisse tasse di soggiorno quadruple per i soli stranieri extracomunitari residenti, quali articoli violerebbe?",
+                    options: [
+                        "L'Articolo 3 (pari dignità e uguaglianza) ed il combinato disposto dell'Articolo 10 (condizione giuridica dello straniero)",
+                        "L'Articolo 12 sulla composizione del tricolore",
+                        "L'Articolo 7 sulla sovranità della Chiesa Cattolica"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "Contravverrebbe sia al principio generale di uguaglianza (Art. 3) sia alla conformità ed alle garanzie di legge riservate allo straniero (Art. 10).",
+                    cardRef: 4
+                },
+                {
+                    id: 15,
+                    text: "In che modo l'Articolo 2 definisce la presenza dei diritti inviolabili all'interno delle 'formazioni sociali'?",
+                    options: [
+                        "Garantisce i diritti dell'uomo sia come singolo sia all'interno dei gruppi e comunità ove si svolge la sua personalità",
+                        "Limita i diritti individuali solo a quando la persona si trova isolata e priva di contatti sociali",
+                        "Subordina la tutela della persona all'approvazione espressa del capofamiglia"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 2 riconosce la tutela dei diritti inviolabili 'sia come singolo sia nelle formazioni sociali ove si svolge la sua personalità'.",
+                    cardRef: 1
+                },
+                {
+                    id: 16,
+                    text: "Un ente regionale approva una delibera che vieta l'innovazione tecnologica e la ricerca nei propri laboratori. Perché risulterebbe illegittima ex Art. 9?",
+                    options: [
+                        "Perché l'Art. 9 impegna la Repubblica (in tutte le sue componenti istituzionali) a promuovere lo sviluppo della ricerca scientifica",
+                        "Perché la ricerca scientifica è una materia riservata esclusivamente al Ministero della Difesa",
+                        "Perché viola il monopolio della bandiera stabilito dall'Art. 12"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 9 impegna la Repubblica unita a promuovere lo sviluppo scientifico e tecnico in tutte le sue articolazioni.",
+                    cardRef: 4
+                },
+                {
+                    id: 17,
+                    text: "Qual è il presupposto che vieta l'estradizione dello straniero ex Art. 10 per fatti commessi nel suo Paese d'origine?",
+                    options: [
+                        "La natura politica del reato contestato o la persecuzione per l'esercizio delle libertà democratiche",
+                        "Il fatto che lo straniero non parli correntemente la lingua italiana",
+                        "Il semplice versamento di un cauzione in denaro alla Cancelleria del Tribunale"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 10 vieta tassativamente l'estradizione dello straniero condannato o perseguito per reati di matrice politica.",
+                    cardRef: 4
+                },
+                {
+                    id: 18,
+                    text: "Quale importante funzione diplomatica assume la clausola del 'ripudio della guerra' contenuta nell'Articolo 11?",
+                    options: [
+                        "Impone la risoluzione pacifica delle controversie attraverso trattati, negoziati ed istituzioni internazionali",
+                        "Vieta l'esistenza stessa di qualsivoglia forza armata o corpo di polizia sul territorio",
+                        "Consente l'uso della forza armata per risolvere qualsiasi disputa contabile con paesi esteri"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Art. 11 bandisce la guerra offensiva e promuove la diplomazia e le organizzazioni internazionali indirizzate alla pace.",
+                    cardRef: 5
+                },
+                {
+                    id: 19,
+                    text: "Che rapporto sussiste nell'Articolo 2 tra i 'diritti inviolabili' e i 'doveri inderogabili'?",
+                    options: [
+                        "Essi sono reciprocamente correlati e costituiscono il fondamento del patto di cittadinanza e solidarietà",
+                        "I doveri inderogabili cancellano e sostituiscono i diritti dei cittadini in caso di crisi economica",
+                        "I diritti spettano solo a chi dimostri un reddito superiore alla media nazionale"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "L'Articolo 2 affianca in modo indissolubile la tutela della libertà (diritti) al senso di responsabilità civica e comunitaria (doveri).",
+                    cardRef: 1
+                },
+                {
+                    id: 20,
+                    text: "Per quale motivo la scelta costituzionale dell'Articolo 1 pone il 'lavoro' e non la 'proprietà' a fondamento della Repubblica?",
+                    options: [
+                        "Per sottolineare che la sovranità e il valore sociale derivano dal contributo attivo della persona e non dal censo ereditato",
+                        "Per obbligare ogni cittadino ad effettuare almeno otto ore quotidiane di lavoro manuale coercitivo",
+                        "Per impedire qualsiasi forma di commercio o iniziativa imprenditoriale privata"
+                    ],
+                    correctAnswer: 0,
+                    explanation: "Ponendo il lavoro a fondamento della Repubblica (Art. 1), i Costituenti hanno collocato al centro il valore e la dignità di ogni persona anziché i privilegi patrimoniali.",
+                    cardRef: 1
+                }
+            ]
+        };
+
+        // --- APP STATE ---
+        let currentView = 'menu'; // menu, scopri_list, scopri_detail, sfida, riepilogo
+        let selectedPath = null; // 'giallo', 'arancione', 'rosso'
+        let currentQuestions = [];
+        let currentCard = null;
+        let currentQuestionIndex = 0;
+        let mistakes = []; // Array to track missed questions { text, explanation }
+        let currentQuestionMistaked = false;
+
+        // --- DOM ELEMENTS ---
+        const appContainer = document.getElementById('app-container');
+        const navButtons = document.getElementById('nav-buttons');
+
+        // --- NAVIGATION LOGIC ---
+        function navigate(view, params = null) {
+            currentView = view;
+            
+            // Manage top-right nav visibility
+            if (view === 'menu') {
+                navButtons.classList.add('hidden');
+            } else {
+                navButtons.classList.remove('hidden');
+            }
+
+            appContainer.innerHTML = ''; // Clear container
+
+            switch (view) {
+                case 'menu':
+                    renderMenu();
+                    break;
+                case 'scopri_list':
+                    renderScopriList();
+                    break;
+                case 'scopri_detail':
+                    renderScopriDetail(params);
+                    break;
+                case 'sfida':
+                    if (params && params.start) {
+                        selectedPath = params.path;
+                        currentQuestions = questionDatabase[selectedPath];
+                        currentQuestionIndex = 0;
+                        mistakes = [];
+                    }
+                    renderSfida();
+                    break;
+                case 'riepilogo':
+                    renderRiepilogo();
+                    break;
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderMenu() {
+            appContainer.innerHTML = `
+                <div class="fade-in text-center flex flex-col items-center justify-center max-w-2xl w-full">
+                    <div class="bg-slate-800 p-6 md:p-8 rounded-2xl shadow-xl w-full border border-slate-700">
+                        <h2 class="text-3xl md:text-4xl font-extrabold mb-4 text-white">Pronto per la sfida?</h2>
+                        <p class="text-base md:text-lg text-slate-300 mb-8">Studia le schede di <strong>Scopri</strong> o seleziona un livello per affrontare la tua <strong>Escape Room</strong> di 20 domande sui Principi Fondamentali.</p>
+                        
+                        <div class="mb-8">
+                            <button onclick="navigate('scopri_list')" class="btn w-full bg-sky-600 hover:bg-sky-500 text-white p-5 rounded-xl shadow-lg flex items-center justify-center gap-4">
+                                <span class="text-3xl">📖</span>
+                                <div class="text-left">
+                                    <div class="text-xl font-bold">Ripassa con "Scopri"</div>
+                                    <div class="text-xs md:text-sm text-sky-100 font-normal">Consulta i primi 12 articoli prima di giocare</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div class="border-t border-slate-700 pt-6">
+                            <h3 class="text-xl font-bold text-amber-400 mb-4">Scegli il percorso della Sfida (20 Prove):</h3>
+                            <div class="flex flex-col gap-4">
+                                <button onclick="navigate('sfida', {start: true, path: 'giallo'})" class="btn bg-yellow-500 hover:bg-yellow-400 text-slate-950 p-4 rounded-xl shadow-md flex items-center justify-between font-bold text-lg">
+                                    <span class="flex items-center gap-3">🟨 Percorso Giallo</span>
+                                    <span class="text-sm font-semibold bg-yellow-600/30 px-3 py-1 rounded-md">Livello Facile ➔</span>
+                                </button>
+                                
+                                <button onclick="navigate('sfida', {start: true, path: 'arancione'})" class="btn bg-orange-500 hover:bg-orange-400 text-slate-950 p-4 rounded-xl shadow-md flex items-center justify-between font-bold text-lg">
+                                    <span class="flex items-center gap-3">🟧 Percorso Arancione</span>
+                                    <span class="text-sm font-semibold bg-orange-600/30 px-3 py-1 rounded-md">Livello Intermedio ➔</span>
+                                </button>
+                                
+                                <button onclick="navigate('sfida', {start: true, path: 'rosso'})" class="btn bg-red-600 hover:bg-red-500 text-white p-4 rounded-xl shadow-md flex items-center justify-between font-bold text-lg">
+                                    <span class="flex items-center gap-3">🟥 Percorso Rosso</span>
+                                    <span class="text-sm font-semibold bg-red-800/40 px-3 py-1 rounded-md">Livello Difficile ➔</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderScopriList() {
+            let html = `
+                <div class="fade-in w-full max-w-3xl">
+                    <h2 class="text-3xl font-bold mb-4 text-sky-400 flex items-center gap-3">
+                        📖 Le Schede del Sapere
+                    </h2>
+                    <p class="mb-6 text-slate-300 text-lg">Seleziona una scheda per ripassare gli articoli e i concetti chiave necessari per superare le sfide.</p>
+                    <div class="flex flex-col gap-4">
+            `;
+            
+            scopriCards.forEach(card => {
+                html += `
+                    <button onclick="navigate('scopri_detail', ${card.id})" class="btn bg-slate-800 hover:bg-slate-700 border border-slate-600 p-6 rounded-xl text-left shadow-md flex justify-between items-center group">
+                        <span class="text-xl font-semibold text-slate-100">${card.title}</span>
+                        <span class="text-sky-400 text-2xl group-hover:translate-x-2 transition-transform">➔</span>
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="mt-8 flex justify-center">
+                        <button onclick="navigate('menu')" class="btn bg-slate-700 hover:bg-slate-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg w-full sm:w-auto">
+                            Torna al Menu
+                        </button>
+                    </div>
+                </div>
+            `;
+            appContainer.innerHTML = html;
+        }
+
+        function renderScopriDetail(cardId) {
+            const card = scopriCards.find(c => c.id === cardId);
+            appContainer.innerHTML = `
+                <div class="fade-in w-full max-w-3xl bg-slate-800 p-6 md:p-10 rounded-2xl shadow-xl border border-slate-700 relative text-lg">
+                    <button onclick="navigate('scopri_list')" class="btn mb-6 text-sky-400 hover:text-sky-300 flex items-center gap-2 text-lg font-medium">
+                        ⬅ Torna all'elenco schede
+                    </button>
+                    <h2 class="text-3xl font-bold mb-8 text-white border-b border-slate-600 pb-4">${card.title}</h2>
+                    <div class="text-slate-200 leading-relaxed space-y-4">
+                        ${card.content}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSfida() {
+            if (!selectedPath || currentQuestionIndex >= currentQuestions.length) {
+                navigate('riepilogo');
+                return;
+            }
+
+            const q = currentQuestions[currentQuestionIndex];
+            currentQuestionMistaked = false; // Reset for new question
+
+            // Prepare options and shuffle them randomly for ALL paths
+            let optionsToRender = q.options.map((opt, index) => ({
+                text: opt,
+                originalIndex: index
+            }));
+
+            // Fisher-Yates shuffle applied to all difficulty levels
+            for (let i = optionsToRender.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsToRender[i], optionsToRender[j]] = [optionsToRender[j], optionsToRender[i]];
+            }
+
+            // Determine badge for current path
+            let pathBadge = '';
+            if (selectedPath === 'giallo') pathBadge = '<span class="bg-yellow-500 text-slate-950 font-bold px-3 py-1 rounded-md text-sm">🟨 Percorso Giallo</span>';
+            else if (selectedPath === 'arancione') pathBadge = '<span class="bg-orange-500 text-slate-950 font-bold px-3 py-1 rounded-md text-sm">🟧 Percorso Arancione</span>';
+            else if (selectedPath === 'rosso') pathBadge = '<span class="bg-red-600 text-white font-bold px-3 py-1 rounded-md text-sm">🟥 Percorso Rosso</span>';
+
+            let optionsHtml = '';
+            optionsToRender.forEach((optObj) => {
+                optionsHtml += `
+                    <button onclick="checkAnswer(${optObj.originalIndex})" class="btn w-full text-left bg-slate-700 hover:bg-slate-600 text-slate-100 p-5 rounded-xl text-lg md:text-xl shadow-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400 min-h-[64px]">
+                        ${optObj.text}
+                    </button>
+                `;
+            });
+
+            appContainer.innerHTML = `
+                <div class="fade-in w-full max-w-3xl">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
+                        <div>
+                            ${pathBadge}
+                            <h2 class="text-xl md:text-2xl font-bold text-amber-400 mt-2">Prova ${currentQuestionIndex + 1} di ${currentQuestions.length}</h2>
+                        </div>
+                        <span class="bg-slate-800 text-slate-300 px-4 py-2 rounded-lg font-mono border border-slate-700 text-sm md:text-base">Progresso: ${Math.round((currentQuestionIndex / currentQuestions.length) * 100)}%</span>
+                    </div>
+                    
+                    <div class="bg-slate-800 p-6 md:p-8 rounded-2xl shadow-xl border border-slate-700">
+                        <p class="text-xl md:text-2xl text-white mb-8 font-medium leading-snug">${q.text}</p>
+                        <div class="flex flex-col gap-4">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+
+                    <!-- Feedback Area (Hidden by default) -->
+                    <div id="feedback-area" class="hidden mt-6 p-6 rounded-xl shadow-lg"></div>
+                </div>
+            `;
+        }
+
+        // Must be global for onclick
+        window.checkAnswer = function(selectedIndex) {
+            const q = currentQuestions[currentQuestionIndex];
+            const feedbackArea = document.getElementById('feedback-area');
+            const optionsButtons = document.querySelectorAll('#app-container .bg-slate-700');
+
+            // Disable all buttons to prevent multiple clicks during feedback
+            optionsButtons.forEach(btn => btn.disabled = true);
+            optionsButtons.forEach(btn => btn.classList.remove('hover:bg-slate-600', 'cursor-pointer'));
+
+            if (selectedIndex === q.correctAnswer) {
+                // Correct!
+                optionsButtons[selectedIndex].classList.add('bg-green-600', 'border-green-500', 'text-white');
+                
+                feedbackArea.className = 'mt-6 p-6 rounded-xl shadow-lg bg-green-900 border border-green-600 fade-in';
+                feedbackArea.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <span class="text-4xl">✓</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-green-100 mb-2">Esatto!</h3>
+                            <p class="text-green-50 text-lg">${q.explanation}</p>
+                            <button onclick="nextQuestion()" class="btn mt-6 bg-green-700 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-bold text-xl w-full sm:w-auto shadow">
+                                Prossima Prova ➔
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Wrong!
+                optionsButtons[selectedIndex].classList.add('bg-red-800', 'border-red-600', 'text-white');
+                
+                if (!currentQuestionMistaked) {
+                    mistakes.push({
+                        text: q.text,
+                        explanation: q.explanation
+                    });
+                    currentQuestionMistaked = true;
+                }
+
+                feedbackArea.className = 'mt-6 p-6 rounded-xl shadow-lg bg-red-900 border border-red-700 fade-in';
+                feedbackArea.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <span class="text-4xl">✗</span>
+                        <div class="w-full">
+                            <h3 class="text-2xl font-bold text-red-100 mb-2">Risposta Errata</h3>
+                            <p class="text-red-50 text-lg mb-6">${q.explanation}</p>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <button onclick="resetQuestion()" class="btn bg-red-700 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold text-lg flex-1 shadow">
+                                    Riprova
+                                </button>
+                                <button onclick="navigate('scopri_detail', ${q.cardRef})" class="btn bg-slate-700 hover:bg-slate-600 text-sky-300 px-6 py-3 rounded-lg font-bold text-lg flex-1 border border-slate-500 shadow flex items-center justify-center gap-2">
+                                    <span>📖</span> Leggi la Scheda
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        window.nextQuestion = function() {
+            currentQuestionIndex++;
+            renderSfida();
+        };
+
+        window.resetQuestion = function() {
+            renderSfida(); // Just re-render the same question to try again
+        };
+
+        function renderRiepilogo() {
+            let contentHtml = '';
+            let pathName = selectedPath === 'giallo' ? 'Giallo (Facile)' : (selectedPath === 'arancione' ? 'Arancione (Intermedio)' : 'Rosso (Difficile)');
+            
+            // SVG Ironico per la schermata di festeggiamento/giubilo
+            const jubileeSvg = `
+                <div class="my-6 flex flex-col items-center justify-center fade-in">
+                    <div class="relative bg-slate-800 border-2 border-amber-400/50 p-6 rounded-2xl shadow-2xl max-w-sm w-full text-center">
+                        <div class="text-6xl mb-2 animate-bounce">🏛️✨</div>
+                        <svg class="w-32 h-32 mx-auto mb-2 text-amber-400 filter drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <!-- Classical Statue Head with Cool Sunglasses (Irony) -->
+                            <path d="M12 2C7.58 2 4 5.58 4 10c0 2.5 1.14 4.74 2.93 6.22L6 22l4-2 2 1 2-1 4 2-.93-5.78C18.86 14.74 20 12.5 20 10c0-4.42-3.58-8-8-8z" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- Laurel wreath -->
+                            <path d="M7 8c-1.5-1-2.5 0-2.5 0M17 8c1.5-1 2.5 0 2.5 0M8 5c-1-1.5 0-2.5 0-2.5M16 5c1-1.5 0-2.5 0-2.5" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                            <!-- Sunglasses -->
+                            <rect x="6.5" y="8.5" width="4.5" height="3" rx="1" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+                            <rect x="13" y="8.5" width="4.5" height="3" rx="1" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+                            <line x1="11" y1="10" x2="13" y2="10" stroke="#fbbf24" stroke-width="1.5"/>
+                            <!-- Smirk smile -->
+                            <path d="M10 15c1.5 1 3.5 1 4.5 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        <div class="bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-widest py-1 px-3 rounded-full inline-block mb-1 shadow">
+                            Approvato dai Costituenti 😎
+                        </div>
+                        <p class="text-xs text-slate-400 italic">"Articolo 130: Chi supera la Sfida merita un 10 d'ufficio!"</p>
+                    </div>
+                </div>
+            `;
+
+            if (mistakes.length === 0) {
+                contentHtml = `
+                    <div class="text-center p-4">
+                        <div class="text-6xl mb-4">🏆</div>
+                        <h2 class="text-4xl font-bold text-green-400 mb-2">Percorso Netto!</h2>
+                        <p class="text-lg text-amber-300 mb-2 font-semibold">Percorso completato: ${pathName}</p>
+                        ${jubileeSvg}
+                        <p class="text-xl text-slate-200">Bravissimo! Hai dimostrato di padroneggiare perfettamente i Principi Fondamentali della Costituzione Italiana senza commettere alcun errore.</p>
+                    </div>
+                `;
+            } else {
+                contentHtml = `
+                    <div class="text-center mb-6">
+                        <div class="text-5xl mb-2">🎉</div>
+                        <h2 class="text-3xl font-bold text-amber-400 mb-2">Escape Room Completata!</h2>
+                        <p class="text-md text-amber-200 font-semibold mb-2">Percorso completato: ${pathName}</p>
+                        ${jubileeSvg}
+                        <p class="text-lg text-slate-300">Hai concluso le 20 prove. Ecco il riepilogo degli ostacoli incontrati per poter ripassare.</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-white mb-4 border-b border-slate-600 pb-2">I tuoi errori (${mistakes.length}):</h3>
+                `;
+                
+                mistakes.forEach((m, idx) => {
+                    contentHtml += `
+                        <div class="bg-slate-800 p-5 rounded-lg border border-red-900/50 shadow-md">
+                            <p class="font-semibold text-slate-200 mb-2"><span class="text-red-400">Domanda:</span> ${m.text}</p>
+                            <p class="text-slate-400"><span class="text-green-400">Cosa ricordare:</span> ${m.explanation}</p>
+                        </div>
+                    `;
+                });
+                contentHtml += `</div>`;
+            }
+
+            appContainer.innerHTML = `
+                <div class="fade-in w-full max-w-3xl bg-slate-900/50 p-6 md:p-10 rounded-2xl shadow-2xl border border-slate-700">
+                    ${contentHtml}
+                    <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="navigate('menu')" class="btn bg-sky-600 hover:bg-sky-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg">
+                            Torna al Menu Principale
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize App
+        navigate('menu');
+
+    </script>
+</body>
+</html>
